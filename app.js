@@ -1,10 +1,19 @@
 import dotenv from 'dotenv';
-import express from "express"
+import express from "express";
+import accountRouter from "./routes/account.js"
+import cartRouter from "./routes/cart.js"
+import ordersRouter from "./routes/orders.js"
+import productsRouter from "./routes/products.js"
 
 dotenv.config()
 
 const app = express();
 
+app.use(express.json());
+app.use('/account', accountRouter);
+app.use('/cart', cartRouter);
+app.use('/orders', ordersRouter);
+app.use('/products', productsRouter);
 
 
 app.get("/", (req, res) => {
