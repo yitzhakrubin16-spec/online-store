@@ -4,7 +4,6 @@ import {
     loadFromJson,
     saveToJson
 } from "../service/jsonService.js";
-import { error } from "node:console";
 
 const router = express.Router();
 
