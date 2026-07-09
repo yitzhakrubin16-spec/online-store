@@ -28,7 +28,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/items", (req, res) => {
-    let customers = loadFromJson("data/customers.json");
+    const customers = loadFromJson("data/customers.json");
     const products = loadFromJson("data/products.json");
     
     const {customerId, productId, quantity} = req.body;
@@ -52,8 +52,8 @@ router.post("/items", (req, res) => {
         return res.status(400).json({ error: "productId must be a positive number" });
     }
 
-    if (!Number.isFinite(qty) || qty <= 0) {
-        return res.status(400).json({ error: "quantity must be greater than 0" });
+    if (!Number.isInteger(qty) || qty <= 0) {
+        return res.status(400).json({ error: "quantity must be an integer greater than 0" });
     }
 
     let customer = customers.find(customer => customer.customerId === customerId);
@@ -69,26 +69,29 @@ router.post("/items", (req, res) => {
     }
     
 
-    let product = products.find(product => product.id === id);
+    const product = products.find(product => product.id === id);
 
     if(!product){
         return res.status(404).json({error:  "Product not found"});
     }
 
-    if(!product.stock){
+    if(product.stock === 0){
         return res.status(400).json({error : `${product.name} out of stock`});
     }
 
-    if(qty > product.stock){
-        return res.status(400).json({error : `low stock of ${product.name},  only ${product.stock} items left`});
-    }
-
-    product.stock -= qty;
 
     const existingItem = customer.cart.find(item => item.productId === id);
 
+    const currentQuantity = existingItem ? existingItem.quantity : 0;
+    const newQuantity = currentQuantity + qty;
+
+    if (newQuantity > product.stock) {
+        return res.status(400).json({error : `low stock of ${product.name},  only ${product.stock} items left`});
+    }
+
+    
     if (existingItem) {
-        existingItem.quantity += qty;
+        existingItem.quantity = newQuantity;
     } else {
         const item = {
             productId: id,
@@ -99,9 +102,16 @@ router.post("/items", (req, res) => {
     }
     
     saveToJson("data/customers.json", customers);
-    saveToJson("data/products.json", products);
+    
 
-    res.status(201).json({success : "Item added successfully to customer's cart"})
+    res.status(201).json({
+        success : "Item added successfully to customer's cart",
+    cart: customer.cart
+    });
+
+});
+
+router.delete("/items/:productId", (req, res) => {
 
 });
 
