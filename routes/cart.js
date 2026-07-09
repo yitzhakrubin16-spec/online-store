@@ -108,10 +108,44 @@ router.post("/items", (req, res) => {
         success : "Item added successfully to customer's cart",
     cart: customer.cart
     });
-
 });
 
 router.delete("/items/:productId", (req, res) => {
+    const customers = loadFromJson("data/customers.json");
+    
+    const {productId} = req.params;
+    const {customerId} = req.body;
+
+    
+    if(!customerId){
+        return res.status(400).json({error : "must recieve customerId value"});
+    }
+
+    const id = Number(productId);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ error: "productId must be a positive number" });
+    }
+
+    const customer = customers.find(customer => customer.customerId === customerId);
+
+    if(!customer){
+        return res.status(404).json({error : "customer not found"})
+    }
+
+    const productIndex = customer.cart.findIndex(product => product.productId === id);
+    
+    if (productIndex === -1) {
+        return res.status(404).json({
+            error: "Product not found in cart"
+        });
+    }
+
+    customer.cart.splice(productIndex, 1);
+
+    saveToJson("data/customers.json", customers);
+
+    res.status(204).end();
 
 });
 
