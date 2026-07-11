@@ -7,7 +7,7 @@ import {
 const router = express.Router();
 
 router.get("/balance", (req, res) => {
-    const customers = loadFromJson("data/customers.json");
+    const customers = loadFromJson(`${process.env.DB_BASE_PATH}/customers.json`);
 
     const {customerId} = req.query;
 

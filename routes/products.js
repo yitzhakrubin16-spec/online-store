@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
     return res.status(400).json({error: "Invalid query parameter"});
     }
     
-    let result = loadFromJson("data/products.json")
+    let result = loadFromJson(`${process.env.DB_BASE_PATH}/products.json`);
 
     if(inStock){
         if (inStock === "true"){

@@ -8,9 +8,9 @@ import {
 const router = express.Router();
 
 router.post("/checkout", (req, res) => {
-    const customers = loadFromJson("data/customers.json");
-    const products = loadFromJson("data/products.json");
-    const orders = loadFromJson("data/orders.json") || [];
+    const customers = loadFromJson(`${process.env.DB_BASE_PATH}/customers.json`);
+    const products = loadFromJson(`${process.env.DB_BASE_PATH}/products.json`);
+    const orders = loadFromJson(`${process.env.DB_BASE_PATH}/orders.json`);
 
     const {customerId} = req.body;
 
@@ -76,9 +76,9 @@ router.post("/checkout", (req, res) => {
 
     customer.cart = [];
 
-    saveToJson("data/customers.json", customers);
-    saveToJson("data/orders.json", orders);
-    saveToJson("data/products.json", products);
+    saveToJson(`${process.env.DB_BASE_PATH}/customers.json`, customers);
+    saveToJson(`${process.env.DB_BASE_PATH}/products.json`, products);
+    saveToJson(`${process.env.DB_BASE_PATH}/orders.json`, orders);
 
     return res.status(200).json({
         success: true,
@@ -94,7 +94,7 @@ router.get("/", (req, res) => {
         return res.status(400).json({error : "must recieve customerId value"})
     }
 
-    const orders = loadFromJson("data/orders.json");
+    const orders = loadFromJson(`${process.env.DB_BASE_PATH}/orders.json`);
 
     const ordersToShow = orders.filter(order => order.customerId === customerId);
     

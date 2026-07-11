@@ -9,8 +9,7 @@ const router = express.Router();
 
 
 router.get("/", (req, res) => {
-    const customers = loadFromJson("data/customers.json");
-
+    const customers = loadFromJson(`${process.env.DB_BASE_PATH}/customers.json`);
     const {customerId} = req.query;
 
     if(!customerId){
@@ -27,8 +26,8 @@ router.get("/", (req, res) => {
 });
 
 router.post("/items", (req, res) => {
-    const customers = loadFromJson("data/customers.json");
-    const products = loadFromJson("data/products.json");
+    const customers = loadFromJson(`${process.env.DB_BASE_PATH}/customers.json`);
+    const products = loadFromJson(`${process.env.DB_BASE_PATH}/products.json`);
     
     const {customerId, productId, quantity} = req.body;
 
@@ -100,7 +99,7 @@ router.post("/items", (req, res) => {
     customer.cart.push(item);
     }
     
-    saveToJson("data/customers.json", customers);
+    saveToJson(`${process.env.DB_BASE_PATH}/customers.json`, customers);
     
 
     res.status(201).json({
@@ -110,7 +109,7 @@ router.post("/items", (req, res) => {
 });
 
 router.delete("/items/:productId", (req, res) => {
-    const customers = loadFromJson("data/customers.json");
+    const customers = loadFromJson(`${process.env.DB_BASE_PATH}/customers.json`);
     
     const {productId} = req.params;
     const {customerId} = req.body;
@@ -142,7 +141,7 @@ router.delete("/items/:productId", (req, res) => {
 
     customer.cart.splice(productIndex, 1);
 
-    saveToJson("data/customers.json", customers);
+    saveToJson(`${process.env.DB_BASE_PATH}/customers.json`, customers);
 
     res.status(204).end();
 
