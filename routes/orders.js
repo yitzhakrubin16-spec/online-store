@@ -87,4 +87,21 @@ router.post("/checkout", (req, res) => {
 });
 
 
+router.get("/", (req, res) => {
+    const {customerId} = req.query;
+
+    if(!customerId){
+        return res.status(400).json({error : "must recieve customerId value"})
+    }
+
+    const orders = loadFromJson("data/orders.json");
+
+    const ordersToShow = orders.filter(order => order.customerId === customerId);
+    
+    res.status(200).json({
+        "success" : true,
+        "data" : ordersToShow
+    });
+});
+
 export default router;
